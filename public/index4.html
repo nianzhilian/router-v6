@@ -54,12 +54,54 @@
       let res = itereator.next();
       function run(){
         if(!res.done){
-          //如果想获取
-          res = itereator.next(res.value);
+          //如果在调用next的时候 给 next传递参数  该参数会作为 yield 整个表达式的值返回
+          //执行步骤
+          //第一次调用就不care了  第一次调用碰到yield 1; 就会卡住不会往下执行  这个时候还不执行赋值操作
+          //第二次调用next 传递上一次迭代的值作为参数传递  这个时候 就会从上一次 yield的位置 运行到下一个yield （这个时候就会进行赋值操作）
+          //整个yield 表达式的返回值 就是给next函数传递的参数
+          //依次类推
+          console.log(res);
+          res = itereator.next("张三:"+Math.random());
           run();
         }
       }
       run();
+
+      function getAns(arr,input_number){
+        var result,min,max;
+        for(var i = 0;i<arr.length;i++){
+          min = arr[i][0];
+          max = arr[i][1];
+          if(input_number >= min && input_number <= max){
+            result = max;
+          }
+        }
+        return result;
+      }
+
+      function findMaxNum(num){
+        var lpc = '5,15,30';
+        var arr = [];
+        var temparr1 = [];
+        var tempcount;
+        arr = lpc.split(",");
+        temparr1 = arr.slice();
+        for(var i = 0;i<temparr1.length;i++){
+                  if(i == 0){
+                    temparr1[i] = ['1',temparr1[i]];
+                  }else{
+                    tempcount = parseInt(arr[i-1])+1;
+                    temparr1[i] = [tempcount+'',arr[i]];
+                  }
+          }
+        console.log(temparr1);
+        var maxNum = getAns(temparr1,Math.abs(num));
+        console.log(maxNum);
+        return maxNum;
+      }
+
+      findMaxNum(10);
+
     </script>
     <!--
       This HTML file is a template.

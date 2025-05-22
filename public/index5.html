@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+    <style>
+      #dad{
+        opacity: 0;
+        transition: opacity .2s;
+      }
+      .cl{
+        opacity: 1!important;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script>
+      var i = 0;
+      function asyncData(){
+        return new Promise((resolve,reject)=>{
+          setTimeout(() => {
+            i++;
+            //3秒后完成 完成的数据
+            resolve('完成'+i);
+          }, 3000);
+        })
+      }
+      //调用next()方法时传入的值会作为上一个yield表达式的返回值
+      //创建一个生成器函数 调用时返回一个生成器
+      function* task(){
+        console.log("开始获取数据");
+        let data = yield asyncData();
+        console.log('获取到的数据',data);
+        data = yield asyncData();
+        console.log("又获取到了数据",data);
+        data = yield 1;
+        console.log('又获取到了数据',data);
+        return '结束';
+      }
+      //没封装之前的写法
+      /*function run(createGenerator){
+        const generator = createGenerator();
+        let res = generator.next();
+        function next(){
+          if(!res.done){
+            console.log(res);
+            const value = res.value;
+            if(typeof value.then === 'function'){
+              value.then((data)=>{
+                res = generator.next(data);
+                next();
+              });
+            }else{
+              res = generator.next(value);
+              next();
+            }
+          }
+        }
+        next();
+      }*/
+
+      //封装后的写法
+      function run(createGenerator){
+        const generator = createGenerator();
+        next();
+        function next(nextValue){
+          const res = generator.next(nextValue);
+          if(res.done){
+            console.log('生成器迭代结束');
+            return;
+          }
+          const value = res.value;
+          if(typeof value === 'function'){
+            //如果返回的是promise  将promise完成时的数据作为参数
+            //作为上一次yield表达式的返回值
+            value.then((data)=>{
+              console.log('张三李四网二')
+              console.log(data)
+              return next(data)
+            })
+          }else{
+            console.log('走这里了')
+            //将上一次迭代获取到的value的值作为参数 传递给上一次yield表达式的返回值
+            next(res.value);
+          }
+        }
+      }
+
+      run(task);
+
+    </script>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
