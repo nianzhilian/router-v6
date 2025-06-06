@@ -52,13 +52,13 @@
       //调用next()方法时传入的值会作为上一个yield表达式的返回值
       //创建一个生成器函数 调用时返回一个生成器
       function* task(){
-        console.log("开始获取数据");
+        console.log("第一次next：开始获取数据");
         let data = yield asyncData();
-        console.log('获取到的数据',data);
+        console.log('第二次next：获取到的数据',data);
         data = yield asyncData();
-        console.log("又获取到了数据",data);
+        console.log("第三次next：又获取到了数据",data);
         data = yield 1;
-        console.log('又获取到了数据',data);
+        console.log('第四次next：又获取到了数据',data);
         return '结束';
       }
       //没封装之前的写法

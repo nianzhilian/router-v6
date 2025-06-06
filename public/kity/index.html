@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>公式编辑器</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <script src="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/dev-lib/jquery-1.11.0.min.js"></script>
+    <script src="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/dev-lib/kitygraph.all.js"></script>
+    <script src="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/dev-lib/kity-formula-render.all.js"></script>
+    <script src="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/dev-lib/kity-formula-parser.all.min.js"></script>
+    <script src="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/dev-lib/dev-define.js"></script>
+    <script>
+        inc.config({
+            base: 'https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/src'
+        });
+    </script>
+    <script src="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/dev-lib/exports.js"></script>
+    <script src="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/dev-lib/start.js"></script>
+    <script src="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/dev-lib/dev-start.js"></script>
+    <!--<script src="dist/kityformula-editor.all.min.js"></script>-->
+    <script>
+        jQuery( function ($) {
+
+            var factory = kf.EditorFactory.create( $( "#kfEditorContainer" )[ 0 ], {
+                render: {
+                    fontsize: 40
+                },
+                resource: {
+                    path: "resource/"
+                }
+            } );
+
+            factory.ready( function ( KFEditor ) {
+
+                // this指向KFEditor
+
+
+                window.kfe = this;
+                if(window.top.editor.getSelectedHtml() && window.top.editor.getSelectedHtml().$["firstChild"]){
+                    latex = window.top.editor.getSelectedHtml().$["firstChild"].attributes["latex"];
+                    if(latex && latex.value){
+                        this.execCommand( "render", latex.value );
+                    }else{
+                        this.execCommand( "render", "\\placeholder" );
+                    }
+                }else{
+                    this.execCommand( "render", "\\placeholder" );
+                }
+                this.execCommand( "focus" );
+                
+
+            } );
+
+
+
+        } );
+
+        var latex = "";
+
+        var init = function(){
+            if(window.top.editor.getSelectedHtml() && window.top.editor.getSelectedHtml().$["firstChild"]){
+                var latev = window.top.editor.getSelectedHtml().$["firstChild"].attributes["latex"];
+                if(latev && latev.value){
+                    window.kfe.execCommand( "render", latev.value );
+                }else{
+                    window.kfe.execCommand( "render", "\\placeholder" );
+                }
+            }else{
+                window.kfe.execCommand( "render", "\\placeholder" );
+            }
+            window.kfe.execCommand( "focus" );
+        }
+
+        var saveLog = function(){
+            window.kfe.execCommand('get.image.data', function(data){
+                var latex = kfe.execCommand('get.source');
+                var vlext = '<img class="kfformula" src="'+ data.img +'" latex="' + latex + '" />';
+                if(top.window.kitySave){
+                    top.window.kitySave(vlext);
+                }
+            });
+        }
+        var cancel = function(){
+            if(top.window.kityCancel){
+                top.window.kityCancel();
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/assets/styles/page.css">
+    <link rel="stylesheet" href="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/assets/styles/base.css">
+    <link rel="stylesheet" href="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/assets/styles/ui.css">
+    <link rel="stylesheet" href="https://cdnw2.acmcoder.com/release/exam/2.1.17/htmls/kity/assets/styles/scrollbar.css">
+    <style type="text/css">
+        html, body{background: #dedede;}
+        body{  height:initial; }
+        .btn{ padding:6px 10px; }
+        .btn a{ padding:6px 10px; background: #2cbfde; float: right; margin-left:15px; color:#fff; font-size:12px;}
+        .btn a.gray{ background: #ccc; color:#333; }
+    </style>
+</head>
+<body>
+    <div id="kfEditorContainer" class="kf-editor" style="width: 780px; height: 502px; " >
+    </div>
+    <div class="btn"> <a href="javascript:void(0)" onclick="saveLog()">保 存</a> <a class="gray" href="javascript:void(0)" onclick="cancel()">取 消</a></div>
+</body>
+</html>
